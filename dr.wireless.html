@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Wireless Pentest Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a2a3a;
+            --secondary: #2c3e50;
+            --accent: #3498db;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --dark: #0f1925;
+            --light: #ecf0f1;
+            --text: #f5f7fa;
+            --console-bg: #0a0f15;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #95a5a6;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .card {
+            background: rgba(30, 40, 50, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-title h2 {
+            font-size: 1.6rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 12px;
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: #d35400;
+        }
+        
+        .btn-block {
+            display: flex;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .select-box {
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: white;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .select-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+        
+        .status {
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .network-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .network-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .network-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        
+        .network-list::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .network-item {
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .network-item:hover {
+            background: rgba(0, 0, 0, 0.35);
+            transform: translateX(5px);
+        }
+        
+        .network-item.selected {
+            border-left: 4px solid var(--success);
+            background: rgba(46, 204, 113, 0.1);
+        }
+        
+        .network-info {
+            flex: 1;
+        }
+        
+        .network-name {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .network-details {
+            display: flex;
+            color: #95a5a6;
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .network-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .signal-strength {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+        }
+        
+        .signal-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 24px;
+            gap: 3px;
+        }
+        
+        .signal-bar {
+            width: 5px;
+            background: #7f8c8d;
+            border-radius: 2px;
+        }
+        
+        .signal-bar.active {
+            background: var(--success);
+        }
+        
+        .security-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .security-open {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+        
+        .security-wep {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--warning);
+        }
+        
+        .security-wpa {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+        }
+        
+        .console-output {
+            background: var(--console-bg);
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Fira Code', monospace;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid rgba(0, 255, 0, 0.15);
+            box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.1);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        
+        .console-output::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .console-output::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        
+        .console-output::-webkit-scrollbar-thumb {
+            background: var(--success);
+            border-radius: 4px;
+        }
+        
+        .console-line {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .console-timestamp {
+            color: #7f8c8d;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .progress-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 12px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .signal-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .signal-icon {
+            font-size: 1.5rem;
+            color: var(--success);
+        }
+        
+        .signal-value {
+            font-weight: bold;
+        }
+        
+        .interface-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .interface-item {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .interface-item:hover {
+            background: rgba(0, 0, 0, 0.35);
+        }
+        
+        .interface-item.selected {
+            border-color: var(--accent);
+            background: rgba(52, 152, 219, 0.15);
+        }
+        
+        .interface-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .interface-type {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        .monitor-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(243, 156, 18, 0.15);
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .monitor-indicator.active {
+            background: rgba(46, 204, 113, 0.15);
+            border-left: 4px solid var(--success);
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Advanced Wireless Pentest Tool</h1>
+        <p class="subtitle">Professional network scanning and WPA handshake capture tool for penetration testing. Use only on networks you have permission to test.</p>
+    </header>
+    
+    <div class="container">
+        <!-- Left Column -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-network-wired"></i>
+                    <h2>Network Interfaces</h2>
+                </div>
+                <p>Select the wireless interface to use for scanning and packet capture:</p>
+                
+                <div class="interface-list">
+                    <div class="interface-item selected" data-interface="wlan0">
+                        <div class="interface-name">wlan0</div>
+                        <div class="interface-type">Wireless (802.11ac)</div>
+                        <div>Monitor mode: <span class="status-text">Available</span></div>
+                    </div>
+                    <div class="interface-item" data-interface="wlan1">
+                        <div class="interface-name">wlan1</div>
+                        <div class="interface-type">Wireless (802.11n)</div>
+                        <div>Monitor mode: <span class="status-text">Available</span></div>
+                    </div>
+                    <div class="interface-item" data-interface="eth0">
+                        <div class="interface-name">eth0</div>
+                        <div class="interface-type">Ethernet</div>
+                        <div>Monitor mode: <span class="status-text">N/A</span></div>
+                    </div>
+                </div>
+                
+                <div class="monitor-indicator">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Monitor mode is <strong>disabled</strong>. Enable for packet capture.</div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="scanBtn" class="btn btn-block">
+                        <i class="fas fa-wifi"></i>
+                        Scan for Networks
+                    </button>
+                    <button id="monitorBtn" class="btn btn-warning btn-block">
+                        <i class="fas fa-binoculars"></i>
+                        Enable Monitor Mode
+                    </button>
+                </div>
+                
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Networks Found</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Handshakes</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Packets</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-shield-alt"></i>
+                    <h2>Handshake Capture</h2>
+                </div>
+                <p>Capture WPA handshake for the selected network:</p>
+                
+                <div class="btn-group">
+                    <button id="handshakeBtn" class="btn btn-danger">
+                        <i class="fas fa-bolt"></i>
+                        Capture Handshake
+                    </button>
+                    <button id="deauthBtn" class="btn btn-warning">
+                        <i class="fas fa-user-slash"></i>
+                        Send Deauth
+                    </button>
+                    <button id="stopBtn" class="btn">
+                        <i class="fas fa-stop"></i>
+                        Stop Capture
+                    </button>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="captureProgress"></div>
+                </div>
+                
+                <div class="status" id="captureStatus">
+                    Ready to capture. Select a network and enable monitor mode first.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-list"></i>
+                    <h2>Available Networks</h2>
+                </div>
+                <p>Networks detected in range. Click to select for penetration testing:</p>
+                
+                <ul class="network-list" id="networkList">
+                    <!-- Networks will be populated here -->
+                </ul>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-terminal"></i>
+                    <h2>Pentest Console</h2>
+                </div>
+                
+                <div class="console-output" id="consoleOutput">
+                    <div class="console-line">
+                        <span class="console-timestamp">[12:45:31]</span>
+                        <span class="console-text">> Wireless Pentest Tool v2.4.1 initialized</span>
+                    </div>
+                    <div class="console-line">
+                        <span class="console-timestamp">[12:45:32]</span>
+                        <span class="console-text">> System: Linux kali 5.18.0-kali2-amd64</span>
+                    </div>
+                    <div class="console-line">
+                        <span class="console-timestamp">[12:45:32]</span>
+                        <span class="console-text">> Interface wlan0 selected (driver: ath9k_htc)</span>
+                    </div>
+                    <div class="console-line">
+                        <span class="console-timestamp">[12:45:33]</span>
+                        <span class="console-text">> Ready for operations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p><i class="fas fa-exclamation-triangle"></i> This tool is for educational and authorized penetration testing purposes only.</p>
+        <p>Unauthorized access to computer networks is illegal. Always obtain proper permissions before testing.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const scanBtn = document.getElementById('scanBtn');
+            const monitorBtn = document.getElementById('monitorBtn');
+            const handshakeBtn = document.getElementById('handshakeBtn');
+            const deauthBtn = document.getElementById('deauthBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const networkList = document.getElementById('networkList');
+            const captureStatus = document.getElementById('captureStatus');
+            const consoleOutput = document.getElementById('consoleOutput');
+            const captureProgress = document.getElementById('captureProgress');
+            const interfaceItems = document.querySelectorAll('.interface-item');
+            const monitorIndicator = document.querySelector('.monitor-indicator');
+            
+            // State variables
+            let selectedInterface = 'wlan0';
+            let selectedNetwork = null;
+            let isScanning = false;
+            let isCapturing = false;
+            let monitorModeEnabled = false;
+            let captureInterval = null;
+            
+            // Network data - in a real app, this would come from actual scanning
+            const networkData = [
+                {
+                    ssid: 'HomeNet-Secure',
+                    bssid: 'A4:2B:B0:12:34:56',
+                    channel: 6,
+                    security: 'WPA2',
+                    signal: 85,
+                    clients: 3
+                },
+                {
+                    ssid: 'CafePublic',
+                    bssid: 'B8:27:EB:89:AB:CD',
+                    channel: 11,
+                    security: 'OPEN',
+                    signal: 60,
+                    clients: 12
+                },
+                {
+                    ssid: 'Office-Secure',
+                    bssid: 'D4:CA:6D:EF:01:23',
+                    channel: 1,
+                    security: 'WPA3',
+                    signal: 70,
+                    clients: 8
+                },
+                {
+                    ssid: 'Library-Free-WiFi',
+                    bssid: 'F0:9F:C2:45:67:89',
+                    channel: 3,
+                    security: 'WPA2',
+                    signal: 40,
+                    clients: 5
+                },
+                {
+                    ssid: 'Neighbor-5G',
+                    bssid: '1C:7B:1C:AB:CD:EF',
+                    channel: 9,
+                    security: 'WPA2',
+                    signal: 75,
+                    clients: 4
+                },
+                {
+                    ssid: 'IoT-Network',
+                    bssid: '34:AF:90:78:56:34',
+                    channel: 2,
+                    security: 'WPA',
+                    signal: 55,
+                    clients: 7
+                },
+                {
+                    ssid: 'HiddenNetwork',
+                    bssid: '00:1A:2B:3C:4D:5E',
+                    channel: 4,
+                    security: 'WPA2',
+                    signal: 65,
+                    clients: 2
+                }
+            ];
+            
+            // Event Listeners
+            scanBtn.addEventListener('click', startNetworkScan);
+            monitorBtn.addEventListener('click', toggleMonitorMode);
+            handshakeBtn.addEventListener('click', startHandshakeCapture);
+            deauthBtn.addEventListener('click', sendDeauthPackets);
+            stopBtn.addEventListener('click', stopCapture);
+            
+            // Interface selection
+            interfaceItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    interfaceItems.forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    selectedInterface = item.dataset.interface;
+                    addConsoleOutput(`Interface selected: ${selectedInterface}`);
+                });
+            });
+            
+            // Functions
+            function startNetworkScan() {
+                if (isScanning) return;
+                
+                isScanning = true;
+                scanBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Scanning...';
+                scanBtn.disabled = true;
+                
+                addConsoleOutput(`Starting network scan on ${selectedInterface}...`);
+                
+                // Simulate scanning delay
+                setTimeout(() => {
+                    displayNetworks();
+                    isScanning = false;
+                    scanBtn.innerHTML = '<i class="fas fa-wifi"></i> Scan for Networks';
+                    scanBtn.disabled = false;
+                    addConsoleOutput('Network scan completed. 7 networks found.');
+                    document.querySelector('.stat-value').textContent = '7';
+                }, 3000);
+            }
+            
+            function displayNetworks() {
+                // Clear existing networks
+                networkList.innerHTML = '';
+                
+                // Add networks to the list
+                networkData.forEach(network => {
+                    const networkItem = document.createElement('li');
+                    networkItem.className = 'network-item';
+                    networkItem.dataset.bssid = network.bssid;
+                    
+                    // Calculate signal bars based on signal strength
+                    const barCount = Math.min(4, Math.floor(network.signal / 25));
+                    let signalBars = '';
+                    for (let i = 0; i < 4; i++) {
+                        const active = i < barCount ? 'active' : '';
+                        signalBars += `<div class="signal-bar ${active}"></div>`;
+                    }
+                    
+                    // Determine security class
+                    let securityClass = 'security-open';
+                    if (network.security.includes('WPA')) {
+                        securityClass = 'security-wpa';
+                    } else if (network.security.includes('WEP')) {
+                        securityClass = 'security-wep';
+                    }
+                    
+                    networkItem.innerHTML = `
+                        <div class="network-info">
+                            <div class="network-name">
+                                ${network.ssid}
+                                <span class="security-badge ${securityClass}">${network.security}</span>
+                            </div>
+                            <div class="network-details">
+                                <span class="network-detail"><i class="fas fa-fingerprint"></i> ${network.bssid}</span>
+                                <span class="network-detail"><i class="fas fa-signal"></i> ${network.signal}%</span>
+                                <span class="network-detail"><i class="fas fa-wifi"></i> Ch ${network.channel}</span>
+                                <span class="network-detail"><i class="fas fa-users"></i> ${network.clients} clients</span>
+                            </div>
+                        </div>
+                        <div class="signal-strength">
+                            <div class="signal-bars">${signalBars}</div>
+                        </div>
+                    `;
+                    
+                    networkItem.addEventListener('click', () => {
+                        // Remove selection from all items
+                        document.querySelectorAll('.network-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // Add selection to this item
+                        networkItem.classList.add('selected');
+                        selectedNetwork = network;
+                        addConsoleOutput(`Selected network: ${network.ssid} (${network.bssid})`);
+                    });
+                    
+                    networkList.appendChild(networkItem);
+                });
+            }
+            
+            function toggleMonitorMode() {
+                if (monitorModeEnabled) {
+                    // Disable monitor mode
+                    addConsoleOutput(`Disabling monitor mode on ${selectedInterface}...`);
+                    monitorBtn.innerHTML = '<i class="fas fa-binoculars"></i> Enable Monitor Mode';
+                    monitorBtn.classList.remove('btn-success');
+                    monitorBtn.classList.add('btn-warning');
+                    monitorIndicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <div>Monitor mode is <strong>disabled</strong>. Enable for packet capture.</div>';
+                    monitorIndicator.classList.remove('active');
+                    
+                    // Simulate disabling
+                    setTimeout(() => {
+                        monitorModeEnabled = false;
+                        addConsoleOutput('Monitor mode disabled');
+                    }, 1500);
+                } else {
+                    // Enable monitor mode
+                    addConsoleOutput(`Enabling monitor mode on ${selectedInterface}...`);
+                    monitorBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Enabling...';
+                    
+                    // Simulate enabling monitor mode
+                    setTimeout(() => {
+                        monitorModeEnabled = true;
+                        monitorBtn.innerHTML = '<i class="fas fa-check-circle"></i> Disable Monitor Mode';
+                        monitorBtn.classList.remove('btn-warning');
+                        monitorBtn.classList.add('btn-success');
+                        monitorIndicator.innerHTML = '<i class="fas fa-check-circle"></i> <div>Monitor mode is <strong>enabled</strong>. Ready for packet capture.</div>';
+                        monitorIndicator.classList.add('active');
+                        addConsoleOutput('Monitor mode enabled successfully');
+                    }, 2000);
+                }
+            }
+            
+            function startHandshakeCapture() {
+                if (!selectedNetwork) {
+                    addConsoleOutput('[ERROR] Please select a network first');
+                    return;
+                }
+                
+                if (!monitorModeEnabled) {
+                    addConsoleOutput('[ERROR] Please enable monitor mode first');
+                    return;
+                }
+                
+                if (isCapturing) return;
+                
+                isCapturing = true;
+                addConsoleOutput(`Starting handshake capture for ${selectedNetwork.ssid} (${selectedNetwork.bssid})...`);
+                captureStatus.textContent = `Capturing handshake for ${selectedNetwork.ssid}...`;
+                captureStatus.style.color = '#f39c12';
+                captureProgress.style.width = '0%';
+                
+                // Simulate capture progress
+                let progress = 0;
+                captureInterval = setInterval(() => {
+                    progress += 2;
+                    if (progress > 100) {
+                        completeCapture();
+                    } else {
+                        captureProgress.style.width = `${progress}%`;
+                        captureStatus.textContent = `Capturing handshake for ${selectedNetwork.ssid}... ${progress}%`;
+                        addConsoleOutput(`[CAPTURE] Scanning for handshake... ${progress}% complete`);
+                        
+                        // Simulate finding clients
+                        if (progress === 30) {
+                            addConsoleOutput(`[CLIENT] Found client: 34:56:FE:12:34:56 (Signal: 75%)`);
+                        }
+                        if (progress === 60) {
+                            addConsoleOutput(`[CLIENT] Found client: 78:90:AB:CD:EF:12 (Signal: 65%)`);
+                        }
+                    }
+                }, 200);
+            }
+            
+            function sendDeauthPackets() {
+                if (!selectedNetwork) {
+                    addConsoleOutput('[ERROR] Please select a network first');
+                    return;
+                }
+                
+                if (!monitorModeEnabled) {
+                    addConsoleOutput('[ERROR] Please enable monitor mode first');
+                    return;
+                }
+                
+                addConsoleOutput(`[DEAUTH] Sending deauthentication packets to ${selectedNetwork.ssid}...`);
+                
+                // Simulate deauth process
+                let count = 0;
+                const deauthInterval = setInterval(() => {
+                    count++;
+                    addConsoleOutput(`[DEAUTH] Sent 10 deauth packets to client ${count}`);
+                    if (count >= 5) {
+                        clearInterval(deauthInterval);
+                        addConsoleOutput('[DEAUTH] Deauthentication completed. Check for handshake capture');
+                    }
+                }, 800);
+            }
+            
+            function completeCapture() {
+                clearInterval(captureInterval);
+                isCapturing = false;
+                captureProgress.style.width = '100%';
+                
+                // Simulate successful capture 80% of the time
+                const success = Math.random() > 0.2;
+                
+                if (success) {
+                    captureStatus.innerHTML = `<span style="color:#2ecc71">Handshake captured for ${selectedNetwork.ssid}! File: handshake_${Date.now()}.cap</span>`;
+                    addConsoleOutput('[SUCCESS] WPA handshake captured successfully!');
+                    addConsoleOutput('> Handshake saved to handshake.cap');
+                    addConsoleOutput('> Use aircrack-ng or hashcat to crack the password');
+                    
+                    // Update stats
+                    document.querySelectorAll('.stat-value')[1].textContent = 
+                        parseInt(document.querySelectorAll('.stat-value')[1].textContent) + 1;
+                } else {
+                    captureStatus.innerHTML = `<span style="color:#e74c3c">Failed to capture handshake for ${selectedNetwork.ssid}. No clients detected.</span>`;
+                    addConsoleOutput('[ERROR] Failed to capture handshake. No clients detected.');
+                }
+            }
+            
+            function stopCapture() {
+                if (!isCapturing) return;
+                
+                clearInterval(captureInterval);
+                isCapturing = false;
+                captureStatus.textContent = 'Capture stopped manually';
+                captureStatus.style.color = '#e74c3c';
+                captureProgress.style.width = '0%';
+                addConsoleOutput('[INFO] Capture stopped by user');
+            }
+            
+            function addConsoleOutput(message) {
+                const now = new Date();
+                const timestamp = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+                
+                const line = document.createElement('div');
+                line.className = 'console-line';
+                line.innerHTML = `
+                    <span class="console-timestamp">${timestamp}</span>
+                    <span class="console-text">${message}</span>
+                `;
+                consoleOutput.appendChild(line);
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            }
+            
+            // Initialize console output
+            addConsoleOutput('[INFO] Tool initialized. Select an interface to begin.');
+            
+            // Pre-populate networks for demo
+            setTimeout(displayNetworks, 1000);
+        });
+    </script>
+</body>
+</html>
